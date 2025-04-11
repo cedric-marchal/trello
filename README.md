@@ -1,7 +1,7 @@
 # Trello API Client
 
-[![Tests Status](https://img.shields.io/badge/tests-100%25%20passing-brightgreen)](https://github.com/cedric-marchal/trello-client)
-[![Test Coverage](https://img.shields.io/badge/coverage-90%25-green)](https://github.com/cedric-marchal/trello-client)
+[![Tests Status](https://img.shields.io/badge/tests-100%25%20passing-brightgreen)](https://github.com/cedric-marchal/trello)
+[![Test Coverage](https://img.shields.io/badge/coverage-90%25-green)](https://github.com/cedric-marchal/trello)
 [![NPM Version](https://img.shields.io/npm/v/trello.svg)](https://www.npmjs.com/package/trello)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0%2B-blue)](https://www.typescriptlang.org/)
 
