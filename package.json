@@ -1,8 +1,11 @@
 {
-  "name": "trello.ts",
+  "name": "trello-api-typescript",
   "version": "0.15.0",
-  "author": "Norbert Eder <opensource@norberteder.com>",
-  "description": "This module provides an easy way to make requests to the Trello API. TypeScript implementation based on norberteder/trello.",
+  "author": "Cédric Marchal",
+  "contributors": [
+    "Norbert Eder <opensource@norberteder.com> (original author)"
+  ],
+  "description": "Unofficial TypeScript client for the Trello API with automatic rate limiting. Independent fork of norberteder/trello with added features for Actions and Reactions APIs.",
   "type": "module",
   "publishConfig": {
     "access": "public"

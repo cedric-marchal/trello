@@ -2,12 +2,12 @@
 
 [![Tests Status](https://img.shields.io/badge/tests-100%25%20passing-brightgreen)](https://github.com/cedric-marchal/trello)
 [![Test Coverage](https://img.shields.io/badge/coverage-90%25-green)](https://github.com/cedric-marchal/trello)
-[![NPM Version](https://img.shields.io/npm/v/trello.ts.svg)](https://www.npmjs.com/package/trello.ts)
+[![NPM Version](https://img.shields.io/npm/v/trello-api-typescript.svg)](https://www.npmjs.com/package/trello-api-typescript)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0%2B-blue)](https://www.typescriptlang.org/)
 
 A modern, fully typed TypeScript client for the [Trello API](https://developer.atlassian.com/cloud/trello/rest/) with full type safety and automatic rate limiting.
 
-> **Note**: This project is a TypeScript reimplementation based on [norberteder/trello](https://github.com/norberteder/trello), with additional features and improved type safety.
+> **Important**: This is an unofficial, independent fork of [norberteder/trello](https://github.com/norberteder/trello) with TypeScript support and additional features. This project is not affiliated with or endorsed by the original author. It was created to add TypeScript types and support for the Actions and Reactions APIs.
 
 ## Features
 
@@ -22,19 +22,19 @@ A modern, fully typed TypeScript client for the [Trello API](https://developer.a
 
 ```sh
 # Using pnpm (recommended)
-pnpm add trello.ts
+pnpm add trello-api-typescript
 
 # Using npm
-npm install trello.ts
+npm install trello-api-typescript
 
 # Using yarn
-yarn add trello.ts
+yarn add trello-api-typescript
 ```
 
 ## Usage
 
 ```typescript
-import { Trello } from 'trello.ts';
+import { Trello } from 'trello-api-typescript';
 
 // Create a new Trello client
 const trello = new Trello('YOUR_API_KEY', 'YOUR_API_TOKEN');
@@ -395,6 +395,8 @@ const card = await trello.addCard({
 ## License
 
 MIT - see LICENSE file for details.
+
+Original work (c) Norbert Eder. This fork maintains the same MIT license as the original project.
 
 ## Rate Limiting
 
