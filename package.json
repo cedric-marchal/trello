@@ -1,5 +1,5 @@
 {
-  "name": "@cedric-marchal/trello",
+  "name": "trello.ts",
   "version": "0.15.0",
   "author": "Norbert Eder <opensource@norberteder.com>",
   "description": "This module provides an easy way to make requests to the Trello API. TypeScript implementation based on norberteder/trello.",
