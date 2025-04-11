@@ -2,7 +2,7 @@
 
 [![Tests Status](https://img.shields.io/badge/tests-100%25%20passing-brightgreen)](https://github.com/cedric-marchal/trello)
 [![Test Coverage](https://img.shields.io/badge/coverage-90%25-green)](https://github.com/cedric-marchal/trello)
-[![NPM Version](https://img.shields.io/npm/v/trello.svg)](https://www.npmjs.com/package/trello)
+[![NPM Version](https://img.shields.io/npm/v/@cedric-marchal/trello.svg)](https://www.npmjs.com/package/@cedric-marchal/trello)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0%2B-blue)](https://www.typescriptlang.org/)
 
 A modern, fully typed TypeScript client for the [Trello API](https://developer.atlassian.com/cloud/trello/rest/) with full type safety and automatic rate limiting.
@@ -22,19 +22,19 @@ A modern, fully typed TypeScript client for the [Trello API](https://developer.a
 
 ```sh
 # Using pnpm (recommended)
-pnpm add trello
+pnpm add @cedric-marchal/trello
 
 # Using npm
-npm install trello
+npm install @cedric-marchal/trello
 
 # Using yarn
-yarn add trello
+yarn add @cedric-marchal/trello
 ```
 
 ## Usage
 
 ```typescript
-import { Trello } from 'trello';
+import { Trello } from '@cedric-marchal/trello';
 
 // Create a new Trello client
 const trello = new Trello('YOUR_API_KEY', 'YOUR_API_TOKEN');
