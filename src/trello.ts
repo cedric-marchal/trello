@@ -78,19 +78,12 @@ export class Trello {
       throw new TypeError('options should be an object');
     }
 
-    const method = requestMethod.toLowerCase() as RequestMethod;
-    const validMethods: RequestMethod[] = ['post', 'postjson', 'get', 'put', 'putjson', 'delete'];
-
-    if (!validMethods.includes(method)) {
-      throw new Error(
-        'Unsupported requestMethod. Pass one of these methods: POST, GET, PUT, DELETE.'
-      );
-    }
-
+    // Ensure method is a valid RequestMethod
+    const method = requestMethod as RequestMethod;
     const keyTokenObj = this.createQuery();
     const query = { ...options, ...keyTokenObj };
 
-    if (method.includes('json')) {
+    if (method === 'POST_JSON' || method === 'PUT_JSON') {
       const jsonOptions = {
         headers: { 'Content-Type': 'application/json' },
         data: (options as { data?: unknown }).data,
@@ -126,7 +119,7 @@ export class Trello {
       query.idOrganization = organizationId;
     }
 
-    return makeRequest<Board>('post', '/1/boards/', { query }, this.uri);
+    return makeRequest<Board>('POST', '/1/boards/', { query }, this.uri);
   }
 
   /**
@@ -140,7 +133,7 @@ export class Trello {
     query.name = name;
     query.idBoardSource = sourceBoardId;
 
-    return makeRequest<Board>('post', '/1/boards/', { query }, this.uri);
+    return makeRequest<Board>('POST', '/1/boards/', { query }, this.uri);
   }
 
   /**
@@ -157,7 +150,7 @@ export class Trello {
     const query = this.createQuery();
     query.value = value;
 
-    return makeRequest('put', `/1/boards/${boardId}/prefs/${field}`, { query }, this.uri);
+    return makeRequest('PUT', `/1/boards/${boardId}/prefs/${field}`, { query }, this.uri);
   }
 
   /**
@@ -179,7 +172,7 @@ export class Trello {
       query.desc = description;
     }
 
-    return makeRequest<Card>('post', '/1/cards', { query }, this.uri);
+    return makeRequest<Card>('POST', '/1/cards', { query }, this.uri);
   }
 
   /**
@@ -199,7 +192,7 @@ export class Trello {
 
     Object.assign(query, extraParams);
 
-    return makeRequest<Card>('post', '/1/cards', { query }, this.uri);
+    return makeRequest<Card>('POST', '/1/cards', { query }, this.uri);
   }
 
   /**
@@ -211,7 +204,7 @@ export class Trello {
     const { boardId, cardId } = params;
     if (boardId === null) {
       return makeRequest<Card>(
-        'get',
+        'GET',
         `/1/cards/${cardId}`,
         { query: this.createQuery() },
         this.uri
@@ -219,7 +212,7 @@ export class Trello {
     }
 
     return makeRequest<Card>(
-      'get',
+      'GET',
       `/1/boards/${boardId}/cards/${cardId}`,
       { query: this.createQuery() },
       this.uri
@@ -233,7 +226,7 @@ export class Trello {
    */
   public async getCardById(params: { cardId: string }): Promise<Card> {
     const { cardId } = params;
-    return makeRequest<Card>('get', `/1/cards/${cardId}`, { query: this.createQuery() }, this.uri);
+    return makeRequest<Card>('GET', `/1/cards/${cardId}`, { query: this.createQuery() }, this.uri);
   }
 
   /**
@@ -249,7 +242,7 @@ export class Trello {
       query.actions = actions;
     }
 
-    return makeRequest<Card[]>('get', `/1/lists/${listId}/cards`, { query }, this.uri);
+    return makeRequest<Card[]>('GET', `/1/lists/${listId}/cards`, { query }, this.uri);
   }
 
   /**
@@ -262,7 +255,7 @@ export class Trello {
     const query = this.createQuery();
     query.value = name;
 
-    return makeRequest('put', `/1/lists/${listId}/name`, { query }, this.uri);
+    return makeRequest('PUT', `/1/lists/${listId}/name`, { query }, this.uri);
   }
 
   /**
@@ -275,7 +268,7 @@ export class Trello {
     const query = this.createQuery();
     query.name = name;
 
-    return makeRequest<List>('post', `/1/boards/${boardId}/lists`, { query }, this.uri);
+    return makeRequest<List>('POST', `/1/boards/${boardId}/lists`, { query }, this.uri);
   }
 
   /**
@@ -293,7 +286,7 @@ export class Trello {
     const data = { type };
 
     return makeRequest(
-      'put',
+      'PUT',
       `/1/boards/${boardId}/members/${memberId}`,
       { data, query },
       this.uri
@@ -313,7 +306,7 @@ export class Trello {
     const query = this.createQuery();
     query.text = comment;
 
-    return makeRequest('post', `/1/cards/${cardId}/actions/comments`, { query }, this.uri);
+    return makeRequest('POST', `/1/cards/${cardId}/actions/comments`, { query }, this.uri);
   }
 
   /**
@@ -329,7 +322,7 @@ export class Trello {
     const query = this.createQuery();
     query.url = url;
 
-    return makeRequest('post', `/1/cards/${cardId}/attachments`, { query }, this.uri);
+    return makeRequest('POST', `/1/cards/${cardId}/attachments`, { query }, this.uri);
   }
 
   /**
@@ -345,7 +338,7 @@ export class Trello {
     const query = this.createQuery();
     query.value = memberId;
 
-    return makeRequest('post', `/1/cards/${cardId}/members`, { query }, this.uri);
+    return makeRequest('POST', `/1/cards/${cardId}/members`, { query }, this.uri);
   }
 
   /**
@@ -360,7 +353,7 @@ export class Trello {
     const { cardId, memberId } = params;
     const query = this.createQuery();
 
-    return makeRequest('delete', `/1/cards/${cardId}/members/${memberId}`, { query }, this.uri);
+    return makeRequest('DELETE', `/1/cards/${cardId}/members/${memberId}`, { query }, this.uri);
   }
 
   /**
@@ -371,7 +364,7 @@ export class Trello {
   public async getBoards(params: { memberId: string }): Promise<Board[]> {
     const { memberId } = params;
     return makeRequest<Board[]>(
-      'get',
+      'GET',
       `/1/members/${memberId}/boards`,
       { query: this.createQuery() },
       this.uri
@@ -386,7 +379,7 @@ export class Trello {
   public async getOrganization(params: { organizationId: string }): Promise<Organization> {
     const { organizationId } = params;
     return makeRequest<Organization>(
-      'get',
+      'GET',
       `/1/organizations/${organizationId}`,
       { query: this.createQuery() },
       this.uri
@@ -400,7 +393,7 @@ export class Trello {
    */
   public async getOrgBoards(organizationId: string): Promise<Board[]> {
     return makeRequest<Board[]>(
-      'get',
+      'GET',
       `/1/organizations/${organizationId}/boards`,
       { query: this.createQuery() },
       this.uri
@@ -417,7 +410,7 @@ export class Trello {
     const query = this.createQuery();
     query.name = name;
 
-    return makeRequest<Checklist>('post', `/1/cards/${cardId}/checklists`, { query }, this.uri);
+    return makeRequest<Checklist>('POST', `/1/cards/${cardId}/checklists`, { query }, this.uri);
   }
 
   /**
@@ -430,7 +423,7 @@ export class Trello {
     const query = this.createQuery();
     query.idChecklistSource = checklistId;
 
-    return makeRequest<Checklist>('post', `/1/cards/${cardId}/checklists`, { query }, this.uri);
+    return makeRequest<Checklist>('POST', `/1/cards/${cardId}/checklists`, { query }, this.uri);
   }
 
   /**
@@ -440,7 +433,7 @@ export class Trello {
    */
   public async getChecklistsOnCard(cardId: string): Promise<Checklist[]> {
     return makeRequest<Checklist[]>(
-      'get',
+      'GET',
       `/1/cards/${cardId}/checklists`,
       { query: this.createQuery() },
       this.uri
@@ -454,7 +447,7 @@ export class Trello {
    */
   public async getActionsOnCard(cardId: string): Promise<TrelloResponse[]> {
     return makeRequest<TrelloResponse[]>(
-      'get',
+      'GET',
       `/1/cards/${cardId}/actions`,
       { query: this.createQuery() },
       this.uri
@@ -478,7 +471,7 @@ export class Trello {
     query.pos = pos;
 
     return makeRequest<CheckItem>(
-      'post',
+      'POST',
       `/1/checklists/${checklistId}/checkitems`,
       { query },
       this.uri
@@ -496,7 +489,7 @@ export class Trello {
     const query = this.createQuery();
     query.value = value;
 
-    return makeRequest('put', `/1/cards/${cardId}/${field}`, { query }, this.uri);
+    return makeRequest('PUT', `/1/cards/${cardId}/${field}`, { query }, this.uri);
   }
 
   /**
@@ -514,7 +507,7 @@ export class Trello {
     const query = this.createQuery();
     query.value = value;
 
-    return makeRequest('put', `/1/checklists/${checklistId}/${field}`, { query }, this.uri);
+    return makeRequest('PUT', `/1/checklists/${checklistId}/${field}`, { query }, this.uri);
   }
 
   /**
@@ -554,7 +547,7 @@ export class Trello {
    */
   public async getMember(memberId: string): Promise<Member> {
     return makeRequest<Member>(
-      'get',
+      'GET',
       `/1/member/${memberId}`,
       { query: this.createQuery() },
       this.uri
@@ -568,7 +561,7 @@ export class Trello {
    */
   public async getMemberCards(memberId: string): Promise<Card[]> {
     return makeRequest<Card[]>(
-      'get',
+      'GET',
       `/1/members/${memberId}/cards`,
       { query: this.createQuery() },
       this.uri
@@ -582,7 +575,7 @@ export class Trello {
    */
   public async getBoardMembers(boardId: string): Promise<Member[]> {
     return makeRequest<Member[]>(
-      'get',
+      'GET',
       `/1/boards/${boardId}/members`,
       { query: this.createQuery() },
       this.uri
@@ -596,7 +589,7 @@ export class Trello {
    */
   public async getOrgMembers(organizationId: string): Promise<Member[]> {
     return makeRequest<Member[]>(
-      'get',
+      'GET',
       `/1/organizations/${organizationId}/members`,
       { query: this.createQuery() },
       this.uri
@@ -613,7 +606,7 @@ export class Trello {
     const query = this.createQuery();
     query.fields = fields;
 
-    return makeRequest<List[]>('get', `/1/boards/${boardId}/lists`, { query }, this.uri);
+    return makeRequest<List[]>('GET', `/1/boards/${boardId}/lists`, { query }, this.uri);
   }
 
   /**
@@ -626,7 +619,7 @@ export class Trello {
     const query = this.createQuery();
     query.filter = filter;
 
-    return makeRequest<List[]>('get', `/1/boards/${boardId}/lists`, { query }, this.uri);
+    return makeRequest<List[]>('GET', `/1/boards/${boardId}/lists`, { query }, this.uri);
   }
 
   /**
@@ -636,7 +629,7 @@ export class Trello {
    */
   public async getCardsOnBoard(boardId: string): Promise<Card[]> {
     return makeRequest<Card[]>(
-      'get',
+      'GET',
       `/1/boards/${boardId}/cards`,
       { query: this.createQuery() },
       this.uri
@@ -659,7 +652,7 @@ export class Trello {
     Object.assign(query, extraParams);
     query.fields = fields;
 
-    return makeRequest<Card[]>('get', `/1/boards/${boardId}/cards`, { query }, this.uri);
+    return makeRequest<Card[]>('GET', `/1/boards/${boardId}/cards`, { query }, this.uri);
   }
 
   /**
@@ -669,7 +662,7 @@ export class Trello {
    */
   public async getCustomFieldsOnBoard(boardId: string): Promise<CustomField[]> {
     return makeRequest<CustomField[]>(
-      'get',
+      'GET',
       `/1/boards/${boardId}/customFields`,
       { query: this.createQuery() },
       this.uri
@@ -693,7 +686,7 @@ export class Trello {
       type: 'list',
     };
 
-    return makeRequest<CustomField>('post', '/1/customFields', { data, query }, this.uri);
+    return makeRequest<CustomField>('POST', '/1/customFields', { data, query }, this.uri);
   }
 
   /**
@@ -715,7 +708,7 @@ export class Trello {
     };
 
     return makeRequest(
-      'post',
+      'POST',
       `/1/customFields/${customFieldId}/options`,
       { data, query },
       this.uri
@@ -737,7 +730,7 @@ export class Trello {
     const query = this.createQuery();
 
     return makeRequest(
-      'put',
+      'PUT',
       `/1/card/${cardId}/customField/${customFieldId}/item`,
       { data: value, query },
       this.uri
@@ -751,7 +744,7 @@ export class Trello {
    */
   public async getCardsOnList(listId: string): Promise<Card[]> {
     return makeRequest<Card[]>(
-      'get',
+      'GET',
       `/1/lists/${listId}/cards`,
       { query: this.createQuery() },
       this.uri
@@ -771,7 +764,7 @@ export class Trello {
     const query = this.createQuery();
     Object.assign(query, extraParams);
 
-    return makeRequest<Card[]>('get', `/1/lists/${listId}/cards`, { query }, this.uri);
+    return makeRequest<Card[]>('GET', `/1/lists/${listId}/cards`, { query }, this.uri);
   }
 
   /**
@@ -780,7 +773,7 @@ export class Trello {
    * @param cardId ID of the card
    */
   public async deleteCard(cardId: string): Promise<TrelloResponse> {
-    return makeRequest('delete', `/1/cards/${cardId}`, { query: this.createQuery() }, this.uri);
+    return makeRequest('DELETE', `/1/cards/${cardId}`, { query: this.createQuery() }, this.uri);
   }
 
   /**
@@ -803,7 +796,7 @@ export class Trello {
     };
 
     return makeRequest<Webhook>(
-      'post',
+      'POST',
       `/1/tokens/${this.token}/webhooks/`,
       { data, query },
       this.uri
@@ -818,7 +811,7 @@ export class Trello {
   public async deleteWebhook(webhookId: string): Promise<TrelloResponse> {
     const query = this.createQuery();
 
-    return makeRequest('delete', `/1/webhooks/${webhookId}`, { query }, this.uri);
+    return makeRequest('DELETE', `/1/webhooks/${webhookId}`, { query }, this.uri);
   }
 
   /**
@@ -828,7 +821,7 @@ export class Trello {
    */
   public async getLabelsForBoard(boardId: string): Promise<Label[]> {
     return makeRequest<Label[]>(
-      'get',
+      'GET',
       `/1/boards/${boardId}/labels`,
       { query: this.createQuery() },
       this.uri
@@ -842,7 +835,7 @@ export class Trello {
    */
   public async getActionsOnBoard(boardId: string): Promise<TrelloResponse[]> {
     return makeRequest<TrelloResponse[]>(
-      'get',
+      'GET',
       `/1/boards/${boardId}/actions`,
       { query: this.createQuery() },
       this.uri
@@ -864,7 +857,7 @@ export class Trello {
       name,
     };
 
-    return makeRequest<Label>('post', '/1/labels', { data, query }, this.uri);
+    return makeRequest<Label>('POST', '/1/labels', { data, query }, this.uri);
   }
 
   /**
@@ -873,7 +866,7 @@ export class Trello {
    * @param labelId ID of the label
    */
   public async deleteLabel(labelId: string): Promise<TrelloResponse> {
-    return makeRequest('delete', `/1/labels/${labelId}`, { query: this.createQuery() }, this.uri);
+    return makeRequest('DELETE', `/1/labels/${labelId}`, { query: this.createQuery() }, this.uri);
   }
 
   /**
@@ -886,7 +879,7 @@ export class Trello {
     const query = this.createQuery();
     const data = { value: labelId };
 
-    return makeRequest('post', `/1/cards/${cardId}/idLabels`, { query, data }, this.uri);
+    return makeRequest('POST', `/1/cards/${cardId}/idLabels`, { query, data }, this.uri);
   }
 
   /**
@@ -897,7 +890,7 @@ export class Trello {
    */
   public async deleteLabelFromCard(cardId: string, labelId: string): Promise<TrelloResponse> {
     return makeRequest(
-      'delete',
+      'DELETE',
       `/1/cards/${cardId}/idLabels/${labelId}`,
       { query: this.createQuery() },
       this.uri
@@ -914,7 +907,7 @@ export class Trello {
     const query = this.createQuery();
     const data = { pos: position };
 
-    return makeRequest('put', `/1/cards/${cardId}`, { query, data }, this.uri);
+    return makeRequest('PUT', `/1/cards/${cardId}`, { query, data }, this.uri);
   }
 
   /**
@@ -928,7 +921,7 @@ export class Trello {
     const query = this.createQuery();
     query.value = value;
 
-    return makeRequest('put', `/1/labels/${labelId}/${field}`, { query }, this.uri);
+    return makeRequest('PUT', `/1/labels/${labelId}/${field}`, { query }, this.uri);
   }
 
   /**
@@ -958,7 +951,7 @@ export class Trello {
    */
   public async getCardStickers(cardId: string): Promise<Sticker[]> {
     return makeRequest<Sticker[]>(
-      'get',
+      'GET',
       `/1/cards/${cardId}/stickers`,
       { query: this.createQuery() },
       this.uri
@@ -992,7 +985,7 @@ export class Trello {
       rotate,
     };
 
-    return makeRequest<Sticker>('post', `/1/cards/${cardId}/stickers`, { query, data }, this.uri);
+    return makeRequest<Sticker>('POST', `/1/cards/${cardId}/stickers`, { query, data }, this.uri);
   }
 
   /**
@@ -1005,7 +998,7 @@ export class Trello {
     const query = this.createQuery();
     query.value = dateValue;
 
-    return makeRequest('put', `/1/cards/${cardId}/due`, { query }, this.uri);
+    return makeRequest('PUT', `/1/cards/${cardId}/due`, { query }, this.uri);
   }
 
   /**
@@ -1026,7 +1019,7 @@ export class Trello {
       data: { value },
     };
 
-    return makeRequest('put', `/1/cards/${cardId}/customField/${fieldId}/item`, options, this.uri);
+    return makeRequest('PUT', `/1/cards/${cardId}/customField/${fieldId}/item`, options, this.uri);
   }
 
   /**
@@ -1036,7 +1029,7 @@ export class Trello {
    */
   public async getCustomFieldsOnCard(cardId: string): Promise<TrelloResponse[]> {
     return makeRequest<TrelloResponse[]>(
-      'get',
+      'GET',
       `/1/cards/${cardId}/customFieldItems`,
       { query: this.createQuery() },
       this.uri
@@ -1050,7 +1043,7 @@ export class Trello {
    */
   public async getAttachmentsOnCard(cardId: string): Promise<TrelloResponse[]> {
     return makeRequest<TrelloResponse[]>(
-      'get',
+      'GET',
       `/1/cards/${cardId}/attachments`,
       { query: this.createQuery() },
       this.uri
@@ -1064,7 +1057,7 @@ export class Trello {
    */
   public async getAction(actionId: string): Promise<TrelloResponse> {
     return makeRequest<TrelloResponse>(
-      'get',
+      'GET',
       `/1/actions/${actionId}`,
       { query: this.createQuery() },
       this.uri
@@ -1079,7 +1072,7 @@ export class Trello {
    */
   public async getActionField(actionId: string, field: string): Promise<TrelloResponse> {
     return makeRequest<TrelloResponse>(
-      'get',
+      'GET',
       `/1/actions/${actionId}/${field}`,
       { query: this.createQuery() },
       this.uri
@@ -1096,7 +1089,7 @@ export class Trello {
     const query = this.createQuery();
     query.text = text;
 
-    return makeRequest('put', `/1/actions/${actionId}`, { query }, this.uri);
+    return makeRequest('PUT', `/1/actions/${actionId}`, { query }, this.uri);
   }
 
   /**
@@ -1109,7 +1102,7 @@ export class Trello {
     const query = this.createQuery();
     query.value = text;
 
-    return makeRequest('put', `/1/actions/${actionId}/text`, { query }, this.uri);
+    return makeRequest('PUT', `/1/actions/${actionId}/text`, { query }, this.uri);
   }
 
   /**
@@ -1118,7 +1111,7 @@ export class Trello {
    * @param actionId ID of the action
    */
   public async deleteAction(actionId: string): Promise<TrelloResponse> {
-    return makeRequest('delete', `/1/actions/${actionId}`, { query: this.createQuery() }, this.uri);
+    return makeRequest('DELETE', `/1/actions/${actionId}`, { query: this.createQuery() }, this.uri);
   }
 
   /**
@@ -1128,7 +1121,7 @@ export class Trello {
    */
   public async getActionBoard(actionId: string): Promise<Board> {
     return makeRequest<Board>(
-      'get',
+      'GET',
       `/1/actions/${actionId}/board`,
       { query: this.createQuery() },
       this.uri
@@ -1142,7 +1135,7 @@ export class Trello {
    */
   public async getActionCard(actionId: string): Promise<Card> {
     return makeRequest<Card>(
-      'get',
+      'GET',
       `/1/actions/${actionId}/card`,
       { query: this.createQuery() },
       this.uri
@@ -1156,7 +1149,7 @@ export class Trello {
    */
   public async getActionList(actionId: string): Promise<List> {
     return makeRequest<List>(
-      'get',
+      'GET',
       `/1/actions/${actionId}/list`,
       { query: this.createQuery() },
       this.uri
@@ -1170,7 +1163,7 @@ export class Trello {
    */
   public async getActionMember(actionId: string): Promise<Member> {
     return makeRequest<Member>(
-      'get',
+      'GET',
       `/1/actions/${actionId}/member`,
       { query: this.createQuery() },
       this.uri
@@ -1184,7 +1177,7 @@ export class Trello {
    */
   public async getActionMemberCreator(actionId: string): Promise<Member> {
     return makeRequest<Member>(
-      'get',
+      'GET',
       `/1/actions/${actionId}/memberCreator`,
       { query: this.createQuery() },
       this.uri
@@ -1198,7 +1191,7 @@ export class Trello {
    */
   public async getActionOrganization(actionId: string): Promise<Organization> {
     return makeRequest<Organization>(
-      'get',
+      'GET',
       `/1/actions/${actionId}/organization`,
       { query: this.createQuery() },
       this.uri
@@ -1223,7 +1216,7 @@ export class Trello {
     }
 
     return makeRequest<TrelloResponse[]>(
-      'get',
+      'GET',
       `/1/actions/${actionId}/reactions`,
       { query },
       this.uri
@@ -1241,7 +1234,7 @@ export class Trello {
     reaction: { shortName: string; skinVariation?: string; native?: string; unified?: string }
   ): Promise<TrelloResponse> {
     return makeRequest(
-      'post',
+      'POST',
       `/1/actions/${actionId}/reactions`,
       {
         query: this.createQuery(),
@@ -1272,7 +1265,7 @@ export class Trello {
     }
 
     return makeRequest<TrelloResponse>(
-      'get',
+      'GET',
       `/1/actions/${actionId}/reactions/${reactionId}`,
       { query },
       this.uri
@@ -1287,7 +1280,7 @@ export class Trello {
    */
   public async deleteActionReaction(actionId: string, reactionId: string): Promise<TrelloResponse> {
     return makeRequest(
-      'delete',
+      'DELETE',
       `/1/actions/${actionId}/reactions/${reactionId}`,
       { query: this.createQuery() },
       this.uri
@@ -1301,7 +1294,7 @@ export class Trello {
    */
   public async getActionReactionsSummary(actionId: string): Promise<TrelloResponse> {
     return makeRequest<TrelloResponse>(
-      'get',
+      'GET',
       `/1/actions/${actionId}/reactionsSummary`,
       { query: this.createQuery() },
       this.uri

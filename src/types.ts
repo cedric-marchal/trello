@@ -1,7 +1,7 @@
 // src/types.ts
 
 // Request types
-export type RequestMethod = 'post' | 'get' | 'put' | 'delete' | 'postjson' | 'putjson';
+export type RequestMethod = 'POST' | 'GET' | 'PUT' | 'DELETE' | 'POST_JSON' | 'PUT_JSON';
 
 export interface RequestOptions {
   [key: string]: unknown;

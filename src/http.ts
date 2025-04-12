@@ -23,13 +23,16 @@ export async function makeRequest<T = TrelloResponse>(
 ): Promise<T> {
   const url = new URL(`${baseUri}${uri}`);
 
+  // Parse method to handle JSON format methods
+  const httpMethod = method.replace(/_JSON$/i, '');
+
   // Configure fetch options
   const fetchOptions: RequestInit = {
-    method: method.replace(/json$/, '').toUpperCase(),
+    method: httpMethod,
   };
 
   // Handle JSON content-type requests
-  if (method.includes('json')) {
+  if (method.includes('JSON')) {
     const jsonOptions = options as JsonRequestOptions;
 
     // Add query parameters to URL
