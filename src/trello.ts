@@ -30,13 +30,25 @@ export class Trello {
   /**
    * Creates a new Trello API client instance
    *
-   * @param key Your Trello API key
-   * @param token Your Trello API token
+   * @param keyOrConfig Your Trello API key or a configuration object
+   * @param token Your Trello API token (not required if using configuration object)
    */
-  constructor(key: string, token: string) {
+  constructor(keyOrConfig: string | { apiKey: string; apiToken: string }, token?: string) {
     this.uri = 'https://api.trello.com';
-    this.key = key;
-    this.token = token;
+
+    if (typeof keyOrConfig === 'string') {
+      if (!token) {
+        throw new Error('Token is required when providing key as a string');
+      }
+      this.key = keyOrConfig;
+      this.token = token;
+    } else {
+      if (!keyOrConfig.apiKey || !keyOrConfig.apiToken) {
+        throw new Error('apiKey and apiToken are required in the configuration object');
+      }
+      this.key = keyOrConfig.apiKey;
+      this.token = keyOrConfig.apiToken;
+    }
   }
 
   /**
